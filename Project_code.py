@@ -2,10 +2,6 @@
 # coding: utf-8
 
 # # Data Preprocessing
-
-# In[5]:
-
-
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -18,87 +14,36 @@ pd.set_option('display.max_columns', 500)
 warnings.filterwarnings('ignore')
 
 
-# In[6]:
-
-
 df = pd.read_csv('survey.csv')
 df.head()
-
-
-# In[7]:
-
 
 print('Shape of the data: ')
 df.shape
 
-
-# In[8]:
-
-
 print('To check out for null values')
 df.isna().sum()
-
-
-# In[9]:
-
 
 print('Dropping uncessary columns')
 df.drop(['Country','state','comments'], axis=1, inplace=True)
 
-
-# In[10]:
-
-
 df.dropna(how='any', axis=0, inplace=True)
-
-
-# In[11]:
-
 
 df.head()
 
-
-# In[12]:
-
-
 df.info()
-
-
-# In[13]:
-
 
 for col in df.columns:
     print('Unique values in {} :'.format(col),len(df[col].unique()))
 
-
-# In[14]:
-
-
 print('Checking for irrelevancy: ')
 df['Age'].unique()
-
-
-# In[15]:
-
 
 df['Age'].replace([df['Age'][df['Age'] < 18]], np.nan, inplace = True)
 df['Age'].replace([df['Age'][df['Age'] > 72]], np.nan, inplace = True)
 
-
-# In[16]:
-
-
 df['Age'].median()
 
-
-# In[17]:
-
-
 df['Gender'].unique()
-
-
-# In[18]:
-
 
 df['Gender'].replace(['Male ', 'male', 'M', 'm', 'Male', 'Cis Male','Man', 'cis male', 'Mail', 'Male-ish', 'Male (CIS)',
                     'Cis Man', 'msle', 'Malr', 'Mal', 'maile', 'Make',], 'Male', inplace = True)
@@ -110,15 +55,7 @@ df["Gender"].replace(['Female (trans)', 'queer/she/they', 'non-binary','fluid', 
                       'Agender', 'A little about you', 'Nah', 'All','ostensibly male, unsure what that really means',
                       'Genderqueer', 'Enby', 'p', 'Neuter', 'something kinda male?','Guy (-ish) ^_^', 'Trans woman',], 'Others', inplace = True)
 
-
-# In[19]:
-
-
 px.histogram(df, x='Age', color='Gender')
-
-
-# In[56]:
-
 
 # Treatment distribution by Age and Gender
 import plotly.express as px
@@ -127,10 +64,6 @@ fig = px.histogram(df, x='Age', color='treatment', facet_col='Gender',
                    title="Treatment Distribution by Age and Gender",
                    labels={'treatment': 'Received Treatment'})
 fig.show()
-
-
-# In[60]:
-
 
 # Work interference vs treatment
 plt.figure(figsize=(10, 6))
@@ -141,11 +74,6 @@ plt.ylabel("Count")
 plt.legend(title="Treatment", loc="upper right")
 plt.show()
 
-
-
-# In[61]:
-
-
 # Mental health consequence by gender
 plt.figure(figsize=(10, 6))
 sns.countplot(data=df, x='mental_health_consequence', hue='Gender', palette='coolwarm')
@@ -155,25 +83,12 @@ plt.ylabel("Count")
 plt.legend(title="Gender", loc="upper right")
 plt.show()
 
-
 # # Data Summary
-
-# In[20]:
-
-
 df.describe
-
-
-# In[21]:
-
 
 df.columns
 
-
 # Treatment by Age
-
-# In[22]:
-
 
 for i in ['Male', 'Female', 'Others']:
     t = df[df['Gender']==i].copy()
@@ -182,17 +97,9 @@ for i in ['Male', 'Female', 'Others']:
     title=i)
     fig.show()
 
-
-# In[23]:
-
-
 px.histogram(df, x='Age',nbins=40)
 
-
 # Wellness Program by Age
-
-# In[24]:
-
 
 for i in ['Male', 'Female', 'Others']:
     t = df[df['Gender']==i].copy()
@@ -201,11 +108,7 @@ for i in ['Male', 'Female', 'Others']:
     title=i)
     fig.show()
 
-
 # # ML Model
-
-# In[25]:
-
 
 import pandas as pd
 import numpy as np
@@ -229,23 +132,11 @@ from sklearn import metrics
 from sklearn.metrics import accuracy_score, mean_squared_error, precision_recall_curve
 from sklearn.model_selection import cross_val_score
 
-
-# In[26]:
-
-
 data = pd.read_csv('survey.csv')
-
-
-# In[27]:
-
 
 defaultInt = 0
 defaultString = 'NaN'
 defaultFloat = 0.0
-
-
-# In[28]:
-
 
 intFeatures = ['Age']
 stringFeatures = ['Gender', 'Country', 'self_employed', 'family_history', 'treatment', 'work_interfere',
@@ -254,10 +145,6 @@ stringFeatures = ['Gender', 'Country', 'self_employed', 'family_history', 'treat
                  'mental_vs_physical', 'obs_consequence', 'benefits', 'care_options', 'wellness_program',
                  'seek_help']
 floatFeatures = []
-
-
-# In[29]:
-
 
 for feature in data:
     if feature in intFeatures:
@@ -271,31 +158,15 @@ for feature in data:
 
 data.head()
 
-
-# In[30]:
-
-
 gender = data['Gender'].str.lower()
 
-
-# In[31]:
-
-
 gender = data['Gender'].unique()
-
-
-# In[32]:
-
 
 male_str = ["male", "m", "male-ish", "maile", "mal", "male (cis)", "make", "male ", "man","msle", "mail", "malr","cis man", "Cis Male", "cis male"]
 
 trans_str = ["trans-female", "something kinda male?", "queer/she/they", "non-binary","nah", "all", "enby", "fluid", "genderqueer", "androgyne", "agender", "male leaning androgynous", "guy (-ish) ^_^", "trans woman", "neuter", "female (trans)", "queer", "ostensibly male, unsure what that really means"]
 
 female_str = ["cis female", "f", "female", "woman",  "femake", "female ","cis-female/femme", "female (cis)", "femail"]
-
-
-# In[33]:
-
 
 for (row, col) in data.iterrows():
     if str.lower(col.Gender) in male_str:
@@ -310,15 +181,7 @@ for (row, col) in data.iterrows():
 random_list = ['A little about you', 'p']
 data = data[~data['Gender'].isin(random_list)]
 
-
-# In[34]:
-
-
 print(data['Gender'].unique())
-
-
-# In[35]:
-
 
 data['Age'].fillna(data['Age'].median(), inplace = True)
 
@@ -331,47 +194,19 @@ data['Age'] = s
 
 data['age_range'] = pd.cut(data['Age'], [0,20,30,65,100], labels = ["0-20", "21-30", "31-65", "66-100"], include_lowest = True)
 
-
-# In[36]:
-
-
 data['self_employed'] = data['self_employed'].replace([defaultString], 'No')
 print(data['self_employed'].unique())
-
-
-# In[37]:
-
 
 data['work_interfere'] = data['work_interfere'].replace([defaultString], 'Don\'t know')
 print(data['work_interfere'].unique())
 
-
-# In[38]:
-
-
 data['Gender'].unique()
-
-
-# In[39]:
-
 
 data['Age'].unique()
 
-
-# In[40]:
-
-
 data['family_history'].unique()
 
-
-# In[41]:
-
-
 data['work_interfere'].unique()
-
-
-# In[42]:
-
 
 labelDict = {}
 for feature in data:
@@ -389,19 +224,11 @@ for feature in data:
 
 data.head()
 
-
-# In[43]:
-
-
 total = data.isnull().sum().sort_values(ascending = False)
 percent = (data.isnull().sum() / data.isnull().count()).sort_values(ascending = False)
 missing_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
 missing_data.head()
 print(missing_data)
-
-
-# In[44]:
-
 
 #correlation matrix
 corrmat = data.corr()
@@ -417,18 +244,10 @@ sns.set(font_scale=1.25)
 hm = sns.heatmap(cm, cbar=True, annot=True, square=True, fmt='.2f', annot_kws={'size': 10}, yticklabels=cols.values, xticklabels=cols.values)
 plt.show()
 
-
-# In[45]:
-
-
 plt.figure(figsize=(12,8))
 sns.distplot(data["Age"], bins=24)
 plt.title("Distribuition and density by Age")
 plt.xlabel("Age")
-
-
-# In[46]:
-
 
 # define X and y
 feature_cols = ['Age', 'Gender', 'family_history', 'benefits', 'care_options', 'anonymity', 'leave', 'work_interfere']
@@ -441,10 +260,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random
 # Create dictionaries for final graph
 methodDict = {}
 rmseDict = ()
-
-
-# In[47]:
-
 
 forest = ExtraTreesClassifier(n_estimators=250, random_state=0)
 
@@ -466,10 +281,6 @@ plt.bar(range(X.shape[1]), importances[indices], color="r", yerr=std[indices], a
 plt.xticks(range(X.shape[1]), labels, rotation='vertical')
 plt.xlim([-1, X.shape[1]])
 plt.show()
-
-
-# In[48]:
-
 
 def evalClassModel(model, y_test, y_pred_class, plot=False):
 
@@ -554,15 +365,9 @@ def evalClassModel(model, y_test, y_pred_class, plot=False):
     def evaluate_threshold(threshold):
         print('Specificity for ' + str(threshold) + ' :', 1 - fpr[thresholds > threshold][-1])
 
-
-
     return accuracy
 
-
 # # Logistic Regression
-
-# In[49]:
-
 
 lr = LogisticRegression()
 lr.fit(X_train, y_train)
@@ -573,11 +378,7 @@ accuracy_score = evalClassModel(lr, y_test, y_pred, True)
 
 methodDict['Log. Regres.'] = accuracy_score * 100
 
-
 # # RFC
-
-# In[50]:
-
 
 random_forest = RandomForestClassifier(max_depth = None, min_samples_leaf=8, min_samples_split=2, n_estimators = 20, random_state = 1)
 forest = random_forest.fit(X_train, y_train)
@@ -588,11 +389,7 @@ accuracy_score = evalClassModel(forest, y_test, y_pred, True)
 
 methodDict['R. Forest'] = accuracy_score * 100
 
-
 # # KNN
-
-# In[51]:
-
 
 knn = KNeighborsClassifier(n_neighbors = 5)
 knn.fit(X_train, y_train)
@@ -603,11 +400,7 @@ accuracy_score = evalClassModel(knn, y_test, y_pred, True)
 
 methodDict['KNN'] = accuracy_score * 100
 
-
 # # Naive Bayes
-
-# In[52]:
-
 
 gnb = GaussianNB()
 y_pred = gnb.fit(X_train, y_train).predict(X_test)
@@ -617,11 +410,7 @@ accuracy_score = evalClassModel(gnb, y_test, y_pred, True)
 
 methodDict['NB'] = accuracy_score * 100
 
-
 # # Conclusion 
-
-# In[53]:
-
 
 def plotSuccess():
     s = pd.Series(methodDict)
